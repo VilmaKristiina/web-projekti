@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Junat</title>
+</head>
+<body>
+
+<nav>
+    <a href="tapahtumat.html">Tapahtumat</a>
+    <a href="saa.html">Sää</a>
+    <a href="liikennekamera.html">Liikennekamera</a>
+    <a href="junat.html">Junat</a>
+</nav>
+
+<h1>Mennäänkö junalla Tampereelle?</h1>
+<p>Kuinkahan usein junia menee?</p>
+
+<div id="vastaus"></div>
+
+<script>
+fetch("https://rata.digitraffic.fi/api/v1/live-trains/station/HKI?departing_trains=100&include_nonstopping=false")
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        naytaJunat(data);
+    })
+    .catch(function(error) {
+        document.getElementById("vastaus").innerHTML =
+            "<p>Tietoa ei pystytä hakemaan</p>";
+    });
+
+function naytaJunat(data) {
+    var teksti = "";
+    for (var i = 0; i < data.length; i++) {
+        var juna = data[i];
+        if (juna.trainCategory !== "Long-distance") {
+            continue;
+        }
+        var vika = juna.timeTableRows.length - 1;
+        var lahtopaikka = juna.timeTableRows[0].stationShortCode;
+        var maaranpaa = juna.timeTableRows[vika].stationShortCode;
+
+        for (var j = 0; j < juna.timeTableRows.length; j++) {
+            var rivi = juna.timeTableRows[j];
+            if (rivi.stationShortCode === "TPE" && rivi.type === "DEPARTURE") {
+                var lahtoPvmStr = juna.timeTableRows[0].scheduledTime;
+                var lahtoAika = lahtoPvmStr.substr(0, 10) + " kello: " + lahtoPvmStr.substr(11, 5);
+
+                var saapumisPvmStr = rivi.scheduledTime;
+                var saapumisAika = saapumisPvmStr.substr(0, 10) + " kello: " + saapumisPvmStr.substr(11, 5);
+
+                teksti += "<h3>Juna nro " + juna.trainNumber + "</h3>";
+                teksti += "<p>Junan tyyppi: " + juna.trainType + "</p>";
+                teksti += "<p>Lähtee " + lahtopaikka + " " + lahtoAika + ". Saapuu " + maaranpaa + " " + saapumisAika + ".</p>";
+                teksti += "<hr>";
+                break;
+            }
+        }
+    }
+    document.getElementById("vastaus").innerHTML = teksti;
+}
+</script>
+
+</body>
+</html>
