@@ -1,0 +1,14 @@
+{
+  "aihe": "Sprintin suunnittelupalaveri",
+  "osallistujien_lkm": 5,
+  "osallistujat": [
+    "Matti Meikäläinen",
+    "Anna Esimerkki",
+    "Sara Suunnittelija",
+    "Joonas Koodari",
+    "Veera Testaaja"
+  ],
+  "paikka": "Teams",
+  "alku": "2025-12-05 09:00",
+  "kesto_min": 60
+}
