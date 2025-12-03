@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tampereen tapahtumat</title>
+</head>
+<body>
+
+<nav>
+    <a href="tapahtumat.html">Tapahtumat</a>
+    <a href="saa.html">Sää</a>
+    <a href="liikennekamera.html">Liikennekamera</a>
+    <a href="junat.html">Junat</a>
+</nav>
+
+<h1>Tampereella tapahtuu</h1>
+<p>Alla listattuna Tampereen tapahtumia Visit Tampere -rajapinnasta.</p>
+
+<div id="vastaus"></div>
+
+<script>
+fetch('https://api.visittampere.com/api/v1/visittampere/event/published/all/?format=json&lang=fi')
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        tapahtumat(data);
+    })
+    .catch(function(error) {
+        document.getElementById("vastaus").innerHTML =
+            "<p>Tietoa ei pystytä hakemaan</p>";
+    });
+
+function tapahtumat(data) {
+    var teksti = "";
+    for (var i = 0; i < data.length; i++) {
+        var nimi = data[i].name || data[i].title || "Tapahtuma";
+        var kuvaus = data[i].description || data[i].lead || "";
+        var url = data[i].url || data[i].link || "#";
+
+        teksti += "<h2>" + nimi + "</h2>";
+        if (kuvaus) {
+            teksti += "<p>" + kuvaus + "</p>";
+        }
+        teksti += "<p><a href='" + url + "' target='_blank'>Lisätietoja tapahtumasta</a></p>";
+        teksti += "<hr>";
+    }
+    document.getElementById("vastaus").innerHTML = teksti;
+}
+</script>
+
+</body>
+</html>
